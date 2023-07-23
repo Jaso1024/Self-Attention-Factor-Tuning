@@ -2,7 +2,7 @@ from SAD import SAD
 from Utils import *
 
 if __name__ == "__main__":
-    model = SAD(cuda=False, num_classes=get_classes_num('caltech101'))
-    train_dl, test_dl = get_data('caltech101')
+    model = SAD(num_classes=get_classes_num('oxford_flowers102'))
+    train_dl, test_dl = get_data('oxford_flowers102')
     model.upload_data(train_dl, test_dl)
-    model.train(10)
+    model.train(101)
