@@ -15,7 +15,7 @@ To get started, head over to the data preparation page: [NOAH Data Preparation](
 
 For each dataset, make sure to:
 - Rename split_zhou_<Dataset Name>.json to data.json
-- Add property "img_path" to the new data.json file, with value "data/<dataset name>/<folder containing raw data>/"
+- Add property "img_path" to the new data.json file, with value `data/<DATASET NAME>/<DATA-CONTAINING FOLDER NAME>/`
 
 
 ## Quick-Start
