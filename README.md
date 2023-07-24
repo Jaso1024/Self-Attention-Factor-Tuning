@@ -18,9 +18,8 @@ For each dataset, make sure to:
 - Add property "img_path" to the new data.json file, with value `data/<DATASET NAME>/<DATA-CONTAINING FOLDER NAME>/`
 
 ## Results (.055 Million Trainable Backbone Parameters) (ViT-B/16)
-More comming soon...
+Coming soon...
 ```
-Oxford Flowers 102: 99.5%
 ```
 
 ## Quick-Start
