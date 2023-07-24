@@ -17,12 +17,23 @@ For each dataset, make sure to:
 - Rename split_zhou_<Dataset Name>.json to data.json
 - Add property "img_path" to the new data.json file, with value `data/<DATASET NAME>/<DATA-CONTAINING FOLDER NAME>/`
 
+## Pretrained Model
+Download the [pretrained ViT-B/16](https://storage.googleapis.com/vit_models/imagenet21k/ViT-B_16.npz) to `<YOUR PATH>/ViT-B_16.npz`
+
+
 ## Results (.055 Million Trainable Backbone Parameters) (ViT-B/16)
 Coming soon...
-
-
-## Quick-Start
 ```
+Oxford Flowers 102: 99.472%
+```
+## Run
+```sh
+cd <YOUR PATH>/SAD
+python3 Test.py
+```
+
+## Modular Quick-Start
+```python
 from SAD import SAD
 from Utils import *
 
