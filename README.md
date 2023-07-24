@@ -19,8 +19,7 @@ For each dataset, make sure to:
 
 ## Results (.055 Million Trainable Backbone Parameters) (ViT-B/16)
 Coming soon...
-```
-```
+
 
 ## Quick-Start
 ```
