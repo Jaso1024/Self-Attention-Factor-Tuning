@@ -46,7 +46,7 @@ if __name__ == "__main__":
     #Non-Timm && Non-ViT models are not supported (yet)
     #Note: SAD uses AdamW with scheduler by default
     sad = SAD(
-        model='vit_tiny_patch16_224',
+        model='vit_base_patch16_224',
         num_classes=get_classes_num(DATASET_NAME),
         validation_interval=1,
         rank=3,
@@ -57,3 +57,4 @@ if __name__ == "__main__":
 
     print('Evaluating...')
     print(evaluate_model(sad, trained_model, dataset_name=DATASET_NAME))
+
