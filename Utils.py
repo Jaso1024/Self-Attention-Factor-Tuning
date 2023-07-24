@@ -102,12 +102,20 @@ def get_data(name, evaluate=True, batch_size=64):
     with open(root + "/data.json") as f:
         data = json.load(f)
 
-    test_data_loader = DataLoader(
-            CustomDataset(data["test"], data['img_path'], transform=transform),
-            batch_size=256, shuffle=True, num_workers=4, pin_memory=True)
-    train_data_loader = DataLoader(
-            CustomDataset(data["train"], data['img_path'], transform=transform),
-            batch_size=batch_size, shuffle=True, drop_last=True, num_workers=4, pin_memory=True)
+    if evaluate:
+        test_data_loader = DataLoader(
+                CustomDataset(data["test"], data['img_path'], transform=transform),
+                batch_size=256, shuffle=True, num_workers=4, pin_memory=True)
+        train_data_loader = DataLoader(
+                CustomDataset(data["train"], data['img_path'], transform=transform),
+                batch_size=batch_size, shuffle=True, drop_last=True, num_workers=4, pin_memory=True)
+    else:
+        test_data_loader = DataLoader(
+                CustomDataset(data["val"], data['img_path'], transform=transform),
+                batch_size=256, shuffle=True, num_workers=4, pin_memory=True)
+        train_data_loader = DataLoader(
+                CustomDataset(data["train"], data['img_path'], transform=transform),
+                batch_size=batch_size, shuffle=True, drop_last=True, num_workers=4, pin_memory=True)
 
     return train_data_loader, test_data_loader
 
