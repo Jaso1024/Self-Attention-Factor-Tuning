@@ -17,11 +17,9 @@ For each dataset, make sure to:
 - Rename split_zhou_<Dataset Name>.json to data.json
 - Add property "img_path" to the new data.json file, with value `data/<DATASET NAME>/<DATA-CONTAINING FOLDER NAME>/`
 
-## Results (.134 Million Trainable Params) (ViT-B/16)
-More comming soon...
-```
-Oxford Flowers 102: 99.5%
-```
+## Results (.055 Million Trainable Backbone Parameters) (ViT-B/16)
+Coming soon...
+
 
 ## Quick-Start
 ```
