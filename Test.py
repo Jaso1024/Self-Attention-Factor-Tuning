@@ -7,7 +7,13 @@ import torch
 from torch.optim import AdamW
 
 def check_dataleak(dataset_name='oxford_flowers102'):
-    mappings = {"caltech101": './data/caltech101/data.json', 'oxford_flowers102': './data/oxford_flowers102/data.json'}
+    mappings = {
+        "caltech101": './data/caltech101/data.json', 
+        'oxford_flowers102': './data/oxford_flowers102/data.json', 
+        'ucf101':'./data/ucf101/data.json',
+        'eurosat': './data/eurosat/data.json',
+        'dtd': './data/dtd/data.json'
+        }
     train_data = json.load(open(mappings[dataset_name], 'r'))['train']
     test_data = json.load(open(mappings[dataset_name], 'r'))['test']
 
@@ -36,25 +42,29 @@ def run_model(sad, dataset_name='oxford_flowers102', epochs=101):
     return sad.train(epochs)
 
 
-DATASET_NAME = 'oxford_flowers102'
+#DATASET_NAME = 'ucf101'
 
 
 if __name__ == "__main__":
-    #Make sure no testing data points are in the training data
-    check_dataleak('oxford_flowers102')
+    datasets = ['dtd','ucf101']
+    for DATASET_NAME in datasets:
+        #Make sure no testing data points are in the training data
+        check_dataleak(DATASET_NAME)
 
-    #Non-Timm && Non-ViT models are not supported (yet)
-    #Note: SAD uses AdamW with scheduler by default
-    sad = SAD(
-        model='vit_base_patch16_224',
-        num_classes=get_classes_num(DATASET_NAME),
-        validation_interval=1,
-        rank=3,
-        scale=10
-    )
+        #Non-Timm && Non-ViT models are not supported (yet)
+        #Note: SAD uses AdamW with scheduler by default
+        sad = SAD(
+            model='vit_base_patch16_224_in21k',
+            num_classes=get_classes_num(DATASET_NAME),
+            validation_interval=20,
+            rank=3,
+            scale=10,
+            timm_ckpt_path='ViT-B_16.npz',
+            drop_path_rate=.1
+        )
 
-    trained_model = run_model(sad, dataset_name=DATASET_NAME, epochs=2)
+        trained_model = run_model(sad, dataset_name=DATASET_NAME, epochs=101)
 
-    print('Evaluating...')
-    print(evaluate_model(sad, trained_model, dataset_name=DATASET_NAME))
+        print('Evaluating...')
+        print(evaluate_model(sad, trained_model, dataset_name=DATASET_NAME))
 

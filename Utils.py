@@ -11,6 +11,7 @@ import json
 _DATASET_NAME = (
     'cifar',
     'caltech101',
+    'ucf101',
     'dtd',
     'oxford_flowers102',
     'oxford_iiit_pet',
@@ -29,7 +30,7 @@ _DATASET_NAME = (
     'smallnorb_azi',
     'smallnorb_ele',
 )
-_CLASSES_NUM = (100, 102, 47, 102, 37, 10, 397, 2, 10, 45, 5, 8, 6, 6, 4, 16, 16, 18, 9)
+_CLASSES_NUM = (100, 102,101, 47, 102, 37, 10, 397, 2, 10, 45, 5, 8, 6, 6, 4, 16, 16, 18, 9)
 
 def get_classes_num(dataset_name):
     dict_ = {name: num for name, num in zip(_DATASET_NAME, _CLASSES_NUM)}

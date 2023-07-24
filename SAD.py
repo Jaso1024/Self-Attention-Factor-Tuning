@@ -61,15 +61,20 @@ class SAD():
         warmup_t=10, 
         lr_min=1e-5, 
         warmup_lr_init=1e-6,
+        timm_ckpt_path=None,
+        drop_path_rate=.1
         ):
 
         self.set_seed(seed)
 
         if model is None:
-            self.model = timm.create_model('vit_base_patch16_224', pretrained=True)
+            if type(timm_ckpt_path) == str:
+                self.model = timm.create_model('vit_base_patch16_224', checkpoint_path=timm_ckpt_path)
+            else:
+                self.model = timm.create_model('vit_base_patch16_224', pretrained=True)
             self.model.reset_classifier(num_classes)
         elif type(model) is str:
-            self.model = timm.create_model(model, pretrained=True)
+            self.model = timm.create_model(model, pretrained=True, drop_path_rate=drop_path_rate)
             self.model.reset_classifier(num_classes)
         else:
             self.model = model
@@ -134,7 +139,7 @@ class SAD():
             self.scheduler = None
 
         if self.verbose:
-            print(f'Number of Trainable Parameters: {self.num_trainable_params} | Number of Total Parameters: {self.num_total_params} | % Trainable Parameters: {self.num_trainable_params/self.num_total_params}')
+            print(f'Number of Trainable Parameters (in backbone): {self.num_trainable_params} | Number of Total Parameters: {self.num_total_params} | % Trainable Parameters: {self.num_trainable_params/self.num_total_params}')
 
         if load:
             self.load_model(self.ckpt_dir)
@@ -152,11 +157,13 @@ class SAD():
         for name, parameter in self.model.named_parameters():
             if 'SAD' in name or 'head' in name:
                 self.trainable_params.append(parameter)
-                if parameter.requires_grad == True:
+                if 'SAD' in name:
                     self.num_trainable_params += parameter.numel()
             else:
                 parameter.requires_grad = False
             self.num_total_params += parameter.numel()
+        
+        
             
 
     def save_model(self, model_path):
@@ -219,7 +226,7 @@ class SAD():
             if self.scheduler is not None:
                 self.scheduler.step(epoch)
             
-            if epoch % self.validation_interval == 0 :
+            if epoch % self.validation_interval == 0 and epoch>1:
                 acc = self.test(self.model, self.test_loader)
                 if acc > self.best_accuracy:
                     self.best_accuracy = acc
