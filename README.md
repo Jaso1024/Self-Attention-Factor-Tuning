@@ -11,14 +11,12 @@ Implementation of Self-Attention Tensor-Decomposition, an original technique for
 ```
 
 ## Data
-To get started, head over to the data preparation page: [NOAH Data Preparation]([https://github.com/ZhangYuanhan-AI/NOAH/#data-preparation](https://github.com/KaiyangZhou/CoOp/blob/main/DATASETS.md)). Once you've obtained the data, place the dataset folders into `<YOUR PATH>/SAD/data/`.
+To get started, head over to the SSF data preparation page and download the VTAB-1K dataset: [SSF Data Preparation](https://github.com/dongzelian/SSF#data-preparation). Once you've obtained the data, place the dataset folders into `<YOUR PATH>/SAD/data/`.
 
-For each dataset, make sure to:
-- Rename split_zhou_<Dataset Name>.json to data.json
-- Add property "img_path" to the new data.json file, with value `data/<DATASET NAME>/<DATA-CONTAINING FOLDER NAME>/`
+To make obtaining the data simpler, they also upload a onedrive from which the VTAB-1K dataset can be downloaded: [Onedrive](https://shanghaitecheducn-my.sharepoint.com/personal/liandz_shanghaitech_edu_cn/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fliandz%5Fshanghaitech%5Fedu%5Fcn%2FDocuments%2FOpenSources%2FSSF%2Fdatasets%2Fvtab%2D1k&ga=1)
 
 ## Pretrained Model
-Download the [pretrained ViT-B/16](https://storage.googleapis.com/vit_models/imagenet21k/ViT-B_16.npz) to `<YOUR PATH>/ViT-B_16.npz`
+Download the [pretrained ViT-B/16](https://storage.googleapis.com/vit_models/imagenet21k/ViT-B_16.npz) to `<YOUR PATH>/SAD/ViT-B_16.npz`
 
 
 ## Results (.055 Million Trainable Backbone Parameters) (ViT-B/16)
