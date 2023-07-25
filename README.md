@@ -23,9 +23,7 @@ Download the [pretrained ViT-B/16](https://storage.googleapis.com/vit_models/ima
 
 ## Results (.055 Million Trainable Backbone Parameters) (ViT-B/16)
 Coming soon...
-```
-Oxford Flowers 102: 99.472%
-```
+
 ## Run
 ```sh
 cd <YOUR PATH>/SAD
