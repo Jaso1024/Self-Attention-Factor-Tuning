@@ -4,14 +4,11 @@ from PIL import Image
 import os
 import os.path
 from torchvision import transforms
-from torch.utils.data import Dataset, DataLoader
 import torch
-import json
 
 _DATASET_NAME = (
     'cifar',
     'caltech101',
-    'ucf101',
     'dtd',
     'oxford_flowers102',
     'oxford_iiit_pet',
@@ -30,7 +27,7 @@ _DATASET_NAME = (
     'smallnorb_azi',
     'smallnorb_ele',
 )
-_CLASSES_NUM = (100, 102,101, 47, 102, 37, 10, 397, 2, 10, 45, 5, 8, 6, 6, 4, 16, 16, 18, 9)
+_CLASSES_NUM = (100, 102, 47, 102, 37, 10, 397, 2, 10, 45, 5, 8, 6, 6, 4, 16, 16, 18, 9)
 
 def get_classes_num(dataset_name):
     dict_ = {name: num for name, num in zip(_DATASET_NAME, _CLASSES_NUM)}
@@ -75,23 +72,6 @@ class ImageFilelist(data.Dataset):
     def __len__(self):
         return len(self.imlist)
 
-class CustomDataset(Dataset):
-    def __init__(self, data, directory, transform=None):
-        self.data = data
-        self.transform = transform
-        self.directory = directory
-
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        img_path, label, class_name = self.data[idx]
-        image = Image.open(self.directory+img_path).convert("RGB")
-
-        if self.transform:
-            image = self.transform(image)
-
-        return image, label
 
 def get_data(name, evaluate=True, batch_size=64):
     root = './data/' + name
@@ -99,24 +79,28 @@ def get_data(name, evaluate=True, batch_size=64):
         transforms.Resize((224, 224), interpolation=3),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
-
-    with open(root + "/data.json") as f:
-        data = json.load(f)
-
     if evaluate:
-        test_data_loader = DataLoader(
-                CustomDataset(data["test"], data['img_path'], transform=transform),
-                batch_size=256, shuffle=True, num_workers=4, pin_memory=True)
-        train_data_loader = DataLoader(
-                CustomDataset(data["train"], data['img_path'], transform=transform),
-                batch_size=batch_size, shuffle=True, drop_last=True, num_workers=4, pin_memory=True)
+        train_loader = torch.utils.data.DataLoader(
+            ImageFilelist(root=root, flist=root + "/train800val200.txt",
+                          transform=transform),
+            batch_size=batch_size, shuffle=True, drop_last=True,
+            num_workers=4, pin_memory=True)
+
+        val_loader = torch.utils.data.DataLoader(
+            ImageFilelist(root=root, flist=root + "/test.txt",
+                          transform=transform),
+            batch_size=256, shuffle=False,
+            num_workers=4, pin_memory=True)
     else:
-        test_data_loader = DataLoader(
-                CustomDataset(data["val"], data['img_path'], transform=transform),
-                batch_size=256, shuffle=True, num_workers=4, pin_memory=True)
-        train_data_loader = DataLoader(
-                CustomDataset(data["train"], data['img_path'], transform=transform),
-                batch_size=batch_size, shuffle=True, drop_last=True, num_workers=4, pin_memory=True)
+        train_loader = torch.utils.data.DataLoader(
+            ImageFilelist(root=root, flist=root + "/train800.txt",
+                          transform=transform),
+            batch_size=batch_size, shuffle=True, drop_last=True,
+            num_workers=4, pin_memory=True)
 
-    return train_data_loader, test_data_loader
-
+        val_loader = torch.utils.data.DataLoader(
+            ImageFilelist(root=root, flist=root + "/val200.txt",
+                          transform=transform),
+            batch_size=256, shuffle=False,
+            num_workers=4, pin_memory=True)
+    return train_loader, val_loader

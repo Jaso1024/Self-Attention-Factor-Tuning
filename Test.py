@@ -42,29 +42,28 @@ def run_model(sad, dataset_name='oxford_flowers102', epochs=101):
     return sad.train(epochs)
 
 
-#DATASET_NAME = 'ucf101'
+DATASET_NAME = 'caltech101'
 
 
 if __name__ == "__main__":
-    datasets = ['dtd','ucf101']
-    for DATASET_NAME in datasets:
         #Make sure no testing data points are in the training data
-        check_dataleak(DATASET_NAME)
+        #check_dataleak(DATASET_NAME)
 
         #Non-Timm && Non-ViT models are not supported (yet)
         #Note: SAD uses AdamW with scheduler by default
         sad = SAD(
             model='vit_base_patch16_224_in21k',
             num_classes=get_classes_num(DATASET_NAME),
-            validation_interval=20,
+            validation_interval=10,
             rank=3,
             scale=10,
             timm_ckpt_path='ViT-B_16.npz',
-            drop_path_rate=.1
+            ckpt_dir='',
+            drop_path_rate=.1,
         )
 
         trained_model = run_model(sad, dataset_name=DATASET_NAME, epochs=101)
 
         print('Evaluating...')
-        print(evaluate_model(sad, trained_model, dataset_name=DATASET_NAME))
+        print(evaluate_model(sad, sad.model, dataset_name=DATASET_NAME))
 

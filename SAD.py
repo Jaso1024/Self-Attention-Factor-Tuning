@@ -62,7 +62,9 @@ class SAD():
         lr_min=1e-5, 
         warmup_lr_init=1e-6,
         timm_ckpt_path=None,
-        drop_path_rate=.1
+        drop_path_rate=.1,
+        train_loader=None,
+        test_loader=None
         ):
 
         self.set_seed(seed)
@@ -90,8 +92,8 @@ class SAD():
         self.num_total_params = 0
         self.verbose = verbose
         self.cuda = cuda
-        self.train_loader = None
-        self.test_loader = None
+        self.train_loader = train_loader
+        self.test_loader = test_loader
         self.best_accuracy = 0
         self.ckpt_dir = ckpt_dir
         self.validation_interval = validation_interval
@@ -237,7 +239,7 @@ class SAD():
         self.model = self.model.cpu()
         return self.model
 
-    @torch.no_grad()
+    
     def test(self, model, loader):
         with torch.no_grad():
             model.eval()
