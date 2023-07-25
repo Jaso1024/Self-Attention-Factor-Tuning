@@ -41,8 +41,27 @@ def run_model(sad, dataset_name='oxford_flowers102', epochs=101):
     sad.upload_data(train_dl, val_dl)
     return sad.train(epochs)
 
-
-DATASET_NAME = 'caltech101'
+_DATASET_NAME = (
+    'cifar',
+    'caltech101',
+    'dtd',
+    'oxford_flowers102',
+    'oxford_iiit_pet',
+    'svhn',
+    'sun397',
+    'patch_camelyon',
+    'eurosat',
+    'resisc45',
+    'diabetic_retinopathy',
+    'clevr_count',
+    'clevr_dist',
+    'dmlab',
+    'kitti',
+    'dsprites_loc',
+    'dsprites_ori',
+    'smallnorb_azi',
+    'smallnorb_ele',
+)
 
 
 if __name__ == "__main__":
@@ -51,19 +70,21 @@ if __name__ == "__main__":
 
         #Non-Timm && Non-ViT models are not supported (yet)
         #Note: SAD uses AdamW with scheduler by default
-        sad = SAD(
-            model='vit_base_patch16_224_in21k',
-            num_classes=get_classes_num(DATASET_NAME),
-            validation_interval=10,
-            rank=3,
-            scale=10,
-            timm_ckpt_path='ViT-B_16.npz',
-            ckpt_dir='',
-            drop_path_rate=.1,
-        )
+        for DATASET_NAME in _DATASET_NAME:
+            sad = SAD(
+                model='vit_base_patch16_224_in21k',
+                num_classes=get_classes_num(DATASET_NAME),
+                validation_interval=1,
+                validation_start=10,
+                rank=3,
+                scale=10,
+                timm_ckpt_path='ViT-B_16.npz',
+                ckpt_dir='',
+                load=False,
+                drop_path_rate=.1,
+            )
 
-        trained_model = run_model(sad, dataset_name=DATASET_NAME, epochs=101)
-
-        print('Evaluating...')
-        print(evaluate_model(sad, sad.model, dataset_name=DATASET_NAME))
-
+            print(f"Training {DATASET_NAME}...")
+            trained_model = run_model(sad, dataset_name=DATASET_NAME, epochs=30,)
+            print(f"Evaluating {DATASET_NAME}...")
+            print(f" {DATASET_NAME} Test Accuracy: {evaluate_model(sad, trained_model, dataset_name=DATASET_NAME)}")

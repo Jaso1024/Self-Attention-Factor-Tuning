@@ -50,6 +50,7 @@ class SAD():
         learning_rate=1e-3,  
         verbose=True,
         validation_interval=1,
+        validation_start=10,
         cuda=True,
         save=True,
         seed=42,
@@ -63,6 +64,7 @@ class SAD():
         warmup_lr_init=1e-6,
         timm_ckpt_path=None,
         drop_path_rate=.1,
+        best_acc=0,
         train_loader=None,
         test_loader=None
         ):
@@ -94,9 +96,10 @@ class SAD():
         self.cuda = cuda
         self.train_loader = train_loader
         self.test_loader = test_loader
-        self.best_accuracy = 0
+        self.best_accuracy = best_acc
         self.ckpt_dir = ckpt_dir
         self.validation_interval = validation_interval
+        self.validation_start = validation_start
         self.save = save
 
         self.model = self.decompose_attention(self.model)
@@ -228,7 +231,7 @@ class SAD():
             if self.scheduler is not None:
                 self.scheduler.step(epoch)
             
-            if epoch % self.validation_interval == 0 and epoch>1:
+            if epoch % self.validation_interval == 0 and epoch > self.validation_start-1:
                 acc = self.test(self.model, self.test_loader)
                 if acc > self.best_accuracy:
                     self.best_accuracy = acc
