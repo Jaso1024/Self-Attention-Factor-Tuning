@@ -17,11 +17,12 @@ from Utils import *
 
 def decomposed_forward(model, x):
         B, N, C = x.shape
+        print(x.shape)
         qkv = model.qkv(x)
 
-        query = model.v_SAD(model.drop(model.query_SAD(model.u_SAD(x))))
-        key = model.v_SAD(model.drop(model.key_SAD(model.u_SAD(x))))
-        value = model.v_SAD(model.drop(model.value_SAD(model.u_SAD(x))))
+        query = model.v_SAFT(model.drop(model.query_SAFT(model.u_SAFT(x))))
+        key = model.v_SAFT(model.drop(model.key_SAFT(model.u_SAFT(x))))
+        value = model.v_SAFT(model.drop(model.value_SAFT(model.u_SAFT(x))))
 
         qkv += torch.cat([query, key, value], dim=2) * model.s
 
@@ -34,11 +35,11 @@ def decomposed_forward(model, x):
 
         x = (attention @ value).transpose(1, 2).reshape(B, N, C)
         projection = model.proj(x)
-        projection += model.v_SAD(model.drop(model.projection_SAD(model.u_SAD(x)))) * model.scale
+        projection += model.v_SAFT(model.drop(model.projection_SAFT(model.u_SAFT(x)))) * model.scale
         x = model.proj_drop(projection)
         return x
 
-class SAD():
+class SAFT():
     def __init__(
         self, 
         model=None, 
@@ -160,9 +161,9 @@ class SAD():
 
     def set_trainable_params(self):
         for name, parameter in self.model.named_parameters():
-            if 'SAD' in name or 'head' in name:
+            if 'SAFT' in name or 'head' in name:
                 self.trainable_params.append(parameter)
-                if 'SAD' in name:
+                if 'SAFT' in name:
                     self.num_trainable_params += parameter.numel()
             else:
                 parameter.requires_grad = False
@@ -266,14 +267,14 @@ class SAD():
             for block in self.model.blocks:
                 attention = block.attn
 
-                attention.u_SAD = nn.Linear(self.match_dim, self.rank, bias=False)
-                attention.v_SAD = nn.Linear(self.rank, self.match_dim, bias=False)
-                nn.init.zeros_(attention.v_SAD.weight)
+                attention.u_SAFT = nn.Linear(self.match_dim, self.rank, bias=False)
+                attention.v_SAFT = nn.Linear(self.rank, self.match_dim, bias=False)
+                nn.init.zeros_(attention.v_SAFT.weight)
 
-                attention.query_SAD = nn.Linear(self.rank, self.rank, bias=False)
-                attention.key_SAD = nn.Linear(self.rank, self.rank, bias=False)
-                attention.value_SAD = nn.Linear(self.rank, self.rank, bias=False)
-                attention.projection_SAD = nn.Linear(self.rank, self.rank, bias=False)
+                attention.query_SAFT = nn.Linear(self.rank, self.rank, bias=False)
+                attention.key_SAFT = nn.Linear(self.rank, self.rank, bias=False)
+                attention.value_SAFT = nn.Linear(self.rank, self.rank, bias=False)
+                attention.projection_SAFT = nn.Linear(self.rank, self.rank, bias=False)
                 attention.drop = nn.Dropout(0.1)
                 attention.s = self.scale
                 attention.dim = self.rank

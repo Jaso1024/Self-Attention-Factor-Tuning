@@ -72,15 +72,15 @@ if __name__ == "__main__":
         #Note: SAD uses AdamW with scheduler by default
         for DATASET_NAME in _DATASET_NAME:
             sad = SAD(
-                model='vit_base_patch16_224_in21k',
+                model='vit_tiny_patch16_224',
                 num_classes=get_classes_num(DATASET_NAME),
                 validation_interval=1,
                 validation_start=10,
                 rank=3,
                 scale=10,
-                timm_ckpt_path='ViT-B_16.npz',
                 ckpt_dir='',
                 load=False,
+                cuda=False,
                 drop_path_rate=.1,
             )
 
