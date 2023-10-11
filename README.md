@@ -8,6 +8,7 @@ Implementation of Self-Attention Factor-Tuning, a technique for Parameter-Effici
 - torchvision == 0.11.1
 - timm == 0.4.12
 - avalanche-lib == 0.1.0
+- tqdm == 4.66.1
 ```
 
 ## Data
