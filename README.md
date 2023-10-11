@@ -20,7 +20,8 @@ Download the [pretrained ViT-B/16](https://storage.googleapis.com/vit_models/ima
 ## Results (.055 Million Trainable Backbone Parameters) (ViT-B/16)
 Coming soon...
 ```
-Caltech101: 90.6%
+Caltech101: 91.6%
+Oxford Flowers: 99.2%
 ```
 
 ## Run
