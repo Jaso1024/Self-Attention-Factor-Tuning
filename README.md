@@ -11,10 +11,10 @@ Implementation of Self-Attention Factor-Tuning, a technique for Parameter-Effici
 ```
 
 ## Data
-To get started, head over to the SSF data preparation page and download the VTAB-1K dataset: [SSF Data Preparation](https://github.com/dongzelian/SSF#data-preparation). Once you've obtained the data, place the dataset folders into `<YOUR PATH>/SAD/data/`.
+To get started, head over to the SSF data preparation page and download the VTAB-1K dataset: [SSF Data Preparation](https://github.com/dongzelian/SSF#data-preparation). Once you've obtained the data, place the dataset folders into `<YOUR PATH>/SAFT/data/`.
 
 ## Pretrained Model
-Download the [pretrained ViT-B/16](https://storage.googleapis.com/vit_models/imagenet21k/ViT-B_16.npz) to `<YOUR PATH>/SAD/ViT-B_16.npz`
+Download the [pretrained ViT-B/16](https://storage.googleapis.com/vit_models/imagenet21k/ViT-B_16.npz) to `<YOUR PATH>/SAFT/ViT-B_16.npz`
 
 
 ## Results (.055 Million Trainable Backbone Parameters) (ViT-B/16)
@@ -25,17 +25,17 @@ Caltech101: 90.6%
 
 ## Run
 ```sh
-cd <YOUR PATH>/SAD
+cd <YOUR PATH>/SAFT
 python3 Test.py
 ```
 
 ## Modular Quick-Start
 ```python
-from SAD import SAD
+from SAFT import SAFT
 from Utils import *
 
 if __name__ == "__main__":
-    sad = SAD(
+    saft = SAFT(
         model='vit_base_patch16_224',
         num_classes=get_classes_num('oxford_flowers102'),
         validation_interval=1,
@@ -43,7 +43,7 @@ if __name__ == "__main__":
         scale=10
     )
     train_dl, test_dl = get_data('oxford_flowers102')
-    sad.upload_data(train_dl, test_dl)
-    sad.train(10)
+    saft.upload_data(train_dl, test_dl)
+    saft.train(10)
 ```
 
