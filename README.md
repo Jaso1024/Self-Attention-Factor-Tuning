@@ -1,5 +1,5 @@
-# SAD
-Implementation of Self-Attention Tensor-Decomposition, an original technique for Parameter-Efficient Fine-Tuning 
+# SAFT
+Implementation of Self-Attention Factor-Tuning, a technique for Parameter-Efficient Fine-Tuning 
 
 ## Requirements
 ```
