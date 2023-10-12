@@ -1,5 +1,6 @@
 # SAFT
 Implementation of Self-Attention Factor-Tuning, a technique for Parameter-Efficient Fine-Tuning 
+[![PyPI version](https://badge.fury.io/py/saft.svg)](https://badge.fury.io/py/saft)
 
 ## Requirements
 ```
