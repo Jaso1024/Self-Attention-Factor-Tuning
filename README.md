@@ -1,6 +1,6 @@
 # SAFT: Self-Attention Factor-Tuning
 
-A highly efficient fine-tuning technique for large-scale neural networks.
+A highly efficient fine-tuning technique for large-scale neural networks (16x more parameter-efficient training than regular fine-tuning).
 
 [![PyPI Version](https://badge.fury.io/py/saft.svg)](https://badge.fury.io/py/saft)
 [![Downloads](https://static.pepy.tech/badge/saft/week)](https://pepy.tech/project/saft)
