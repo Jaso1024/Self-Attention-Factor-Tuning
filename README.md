@@ -60,5 +60,5 @@ For a quick start, download the pretrained ViT-B/16 model:
 ## Results
 
 Achieve remarkable performance with only 0.055 million trainable backbone parameters using ViT-B/16.
+![Performance Results](https://github.com/Jaso1024/SAFT/assets/107654508/6eeb4d44-19d5-495c-ad83-4f7ae6592db8)
 
-![Performance Results](https://github.com/Jaso1024/SAFT/assets/107654508/2ca64ade-2442-4767-9736-5a3c39ef04cc)
