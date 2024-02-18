@@ -15,31 +15,32 @@ from argparse import ArgumentParser
 import yaml
 from Utils import *
 
-def decomposed_forward(model, x):
+vit = None
+
+def decomposed_forward(layer, x):
         B, N, C = x.shape
-        print(x.shape)
-        qkv = model.qkv(x)
+        qkv = layer.qkv(x)
 
-        query = model.v_SAFT(model.drop(model.query_SAFT(model.u_SAFT(x))))
-        key = model.v_SAFT(model.drop(model.key_SAFT(model.u_SAFT(x))))
-        value = model.v_SAFT(model.drop(model.value_SAFT(model.u_SAFT(x))))
+        query = layer.v_SAFT(layer.drop(layer.query_SAFT(vit.u_SAFT(x))))
+        key = layer.v_SAFT(layer.drop(layer.key_SAFT(vit.u_SAFT(x))))
+        value = layer.v_SAFT(layer.drop(layer.value_SAFT(vit.u_SAFT(x))))
 
-        qkv += torch.cat([query, key, value], dim=2) * model.s
+        qkv += torch.cat([query, key, value], dim=2) * layer.s
 
-        qkv = qkv.reshape(B, N, 3, model.num_heads, C // model.num_heads).permute(2, 0, 3, 1, 4)
+        qkv = qkv.reshape(B, N, 3, layer.num_heads, C // layer.num_heads).permute(2, 0, 3, 1, 4)
         query, key, value = qkv[0], qkv[1], qkv[2]
 
-        attention = (query @ key.transpose(-2, -1)) * model.scale
+        attention = (query @ key.transpose(-2, -1)) * layer.scale
         attention = attention.softmax(dim=-1)
-        attention = model.attn_drop(attention)
+        attention = layer.attn_drop(attention)
 
         x = (attention @ value).transpose(1, 2).reshape(B, N, C)
-        projection = model.proj(x)
-        projection += model.v_SAFT(model.drop(model.projection_SAFT(model.u_SAFT(x)))) * model.scale
-        x = model.proj_drop(projection)
+        projection = layer.proj(x)
+        projection += layer.v_SAFT(layer.drop(layer.projection_SAFT(vit.u_SAFT(x)))) * layer.scale
+        x = layer.proj_drop(projection)
         return x
 
-class SAFT():
+class saft():
     def __init__(
         self, 
         model=None, 
@@ -74,7 +75,7 @@ class SAFT():
 
         if model is None:
             if type(timm_ckpt_path) == str:
-                self.model = timm.create_model('vit_base_patch16_224', checkpoint_path=timm_ckpt_path)
+                self.model = timm.create_model('vit_base_patch16_224', checkpoint_path=timm_ckpt_path, drop_path_rate=drop_path_rate)
             else:
                 self.model = timm.create_model('vit_base_patch16_224', pretrained=True)
             self.model.reset_classifier(num_classes)
@@ -151,7 +152,6 @@ class SAFT():
             self.load_model(self.ckpt_dir)
 
     def set_seed(self, seed=0):
-        np.random.seed(seed)
         random.seed(seed)
         torch.manual_seed(seed)
         torch.cuda.manual_seed(seed)
@@ -163,7 +163,7 @@ class SAFT():
         for name, parameter in self.model.named_parameters():
             if 'SAFT' in name or 'head' in name:
                 self.trainable_params.append(parameter)
-                if 'SAFT' in name:
+                if 'head' not in name:
                     self.num_trainable_params += parameter.numel()
             else:
                 parameter.requires_grad = False
@@ -218,7 +218,9 @@ class SAFT():
                     x, y = batch[0].cuda(), batch[1].cuda()
                 else:
                     x, y = batch[0], batch[1]
-                
+
+                global vit
+                vit = self.model
                 out = self.model(x)
                 loss = F.cross_entropy(out, y)
 
@@ -255,6 +257,8 @@ class SAFT():
                     x, y = batch[0].cuda(), batch[1].cuda()
                 else:
                     x, y = batch[0], batch[1]
+                global vit
+                vit = model
                 out = model(x).data
                 acc.update(out.argmax(dim=1).view(-1), y)
 
@@ -264,25 +268,23 @@ class SAFT():
 
     def decompose_attention(self, model):
         if type(model) == timm.models.vision_transformer.VisionTransformer:
-            for block in self.model.blocks:
-                attention = block.attn
+            model.u_SAFT = nn.Linear(self.match_dim, self.rank, bias=False)
+            
+        for _ in model.children():
+                if type(_) == timm.models.vision_transformer.Attention:
+                        _.v_SAFT = nn.Linear(self.rank, self.match_dim, bias=False)
+                        nn.init.zeros_(_.v_SAFT.weight)
+                        _.query_SAFT = nn.Linear(self.rank, self.rank, bias=False)
+                        _.key_SAFT = nn.Linear(self.rank, self.rank, bias=False)
+                        _.value_SAFT = nn.Linear(self.rank, self.rank, bias=False)
+                        _.projection_SAFT = nn.Linear(self.rank, self.rank, bias=False)
+                        _.drop = nn.Dropout(0.1)
+                        _.s = self.scale
+                        _.dim = self.rank
+                        bound_method = decomposed_forward.__get__(_, _.__class__)
+                        setattr(_, 'forward', bound_method)
 
-                attention.u_SAFT = nn.Linear(self.match_dim, self.rank, bias=False)
-                attention.v_SAFT = nn.Linear(self.rank, self.match_dim, bias=False)
-                nn.init.zeros_(attention.v_SAFT.weight)
-
-                attention.query_SAFT = nn.Linear(self.rank, self.rank, bias=False)
-                attention.key_SAFT = nn.Linear(self.rank, self.rank, bias=False)
-                attention.value_SAFT = nn.Linear(self.rank, self.rank, bias=False)
-                attention.projection_SAFT = nn.Linear(self.rank, self.rank, bias=False)
-                attention.drop = nn.Dropout(0.1)
-                attention.s = self.scale
-                attention.dim = self.rank
-                bound_method = decomposed_forward.__get__(attention, attention.__class__)
-                setattr(attention, 'forward', bound_method)
-
-            for child in model.children():
-                child = self.decompose_attention(child)
+                elif len(list(_.children())) != 0:
+                        self.decompose_attention(_)
         
         return model
-            
