@@ -60,7 +60,17 @@ For a quick start, download the pretrained ViT-B/16 model:
 - Place the downloaded model in `<YOUR PATH>/SAFT/ViT-B_16.npz`.
 
 ## Results
+<div align="center">
 
-Achieve remarkable performance with only 0.055 million trainable backbone parameters using ViT-B/16.
-![Performance Results](https://github.com/Jaso1024/SAFT/assets/107654508/6eeb4d44-19d5-495c-ad83-4f7ae6592db8)
+
+
+
+![Performance Results](https://github.com/Jaso1024/Self-Attention-Factor-Tuning/assets/107654508/3319cec9-055a-42db-b88b-c2848f3fa907)
+
+![Performance Results](https://github.com/Jaso1024/Self-Attention-Factor-Tuning/assets/107654508/c9f61913-f206-4914-affb-235dec01672b)
+
+![Performance Results](https://github.com/Jaso1024/Self-Attention-Factor-Tuning/assets/107654508/9e53155b-366d-4b54-9b3c-b84fea3561b4)
+
+</div>
+
 
