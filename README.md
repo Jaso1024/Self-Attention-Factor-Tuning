@@ -2,7 +2,7 @@
 
 A highly efficient fine-tuning technique for large-scale neural networks (16x more parameter-efficient training than regular fine-tuning).
 
-Code for the paper [Self-Attention Factor-Tuning for Parameter-Efficient Fine-Tuning](https://doi.org/10.21203/rs.3.rs-3487308/v1)
+Code for the paper [Self-Attention Factor-Tuning for Parameter-Efficient Fine-Tuning](https://doi.org/10.21203/rs.3.rs-3487308/v2)
 
 [![PyPI Version](https://badge.fury.io/py/saft.svg)](https://badge.fury.io/py/saft)
 [![Downloads](https://static.pepy.tech/badge/saft)](https://pepy.tech/project/saft)
